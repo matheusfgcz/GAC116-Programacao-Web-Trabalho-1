@@ -1,0 +1,127 @@
+{% extends "app.html" %}
+
+{% block title %}Dashboard · FlowTask{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block topbar_actions %}
+  {% if can_create_project %}
+    <a class="btn" href="{% url 'workspace:project_create' %}">Novo projeto</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="stat-grid" aria-label="Resumo">
+  <article class="stat-card">
+    <p class="stat-card__label">Projetos</p>
+    <p class="stat-card__value">{{ project_count }}</p>
+  </article>
+  <article class="stat-card">
+    <p class="stat-card__label">A Fazer (minhas)</p>
+    <p class="stat-card__value">{{ my_task_count }}</p>
+  </article>
+  <article class="stat-card">
+    <p class="stat-card__label">Atrasadas</p>
+    <p class="stat-card__value">{{ overdue_count }}</p>
+  </article>
+</section>
+
+<div class="section-head">
+  <div>
+    <h2>Seus projetos</h2>
+    <p>Acesse o quadro Kanban ou continue de onde parou.</p>
+  </div>
+  <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+    {% if can_create_project %}
+      <a class="btn" href="{% url 'workspace:project_create' %}">Novo projeto</a>
+    {% endif %}
+    <a class="btn btn--secondary" href="{% url 'workspace:project_list' %}">Ver todos</a>
+  </div>
+</div>
+
+{% if projects %}
+  <div class="project-grid">
+    {% for project in projects %}
+      {% include "partials/project_card.html" with project=project %}
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <h3>Nenhum projeto ainda</h3>
+    <p>Crie o primeiro workspace e comece a organizar as entregas.</p>
+    {% if can_create_project %}
+      <a class="btn" href="{% url 'workspace:project_create' %}">Criar projeto</a>
+    {% else %}
+      <p class="due">Aguarde um Gerente ou Administrador criar um projeto.</p>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% if overdue_tasks %}
+  <div class="section-head" style="margin-top: 2.5rem;">
+    <div>
+      <h2>Atenção: atrasadas</h2>
+      <p>Tarefas com prazo vencido atribuídas a você.</p>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Tarefa</th>
+          <th>Projeto</th>
+          <th>Prazo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in overdue_tasks %}
+          <tr>
+            <td><a href="{% url 'workspace:task_detail' task.pk %}?next={{ request.get_full_path|urlencode }}">{{ task.title }}</a></td>
+            <td>{{ task.project.name }}</td>
+            <td class="due due--overdue">{{ task.due_date|date:"d/m/Y" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+
+<div class="section-head" style="margin-top: 2.5rem;">
+  <div>
+    <h2>Minhas tarefas — A Fazer</h2>
+    <p>Tarefas da coluna <strong>A Fazer</strong> atribuídas a você (atualiza conforme o board).</p>
+  </div>
+</div>
+{% if my_tasks %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Tarefa</th>
+          <th>Projeto</th>
+          <th>Status</th>
+          <th>Prioridade</th>
+          <th>Prazo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in my_tasks %}
+          <tr>
+            <td><a href="{% url 'workspace:task_detail' task.pk %}?next={{ request.get_full_path|urlencode }}">{{ task.title }}</a></td>
+            <td>{{ task.project.name }}</td>
+            <td>{{ task.column.name }}</td>
+            <td><span class="priority priority--{{ task.priority }}">{{ task.get_priority_display }}</span></td>
+            <td class="due {% if task.is_overdue %}due--overdue{% endif %}">
+              {% if task.due_date %}{{ task.due_date|date:"d/m/Y" }}{% else %}—{% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="empty-state">
+    <h3>Nenhuma tarefa em A Fazer</h3>
+    <p>Quando um gerente ou admin atribuir a você uma tarefa nessa coluna, ela aparece aqui.</p>
+  </div>
+{% endif %}
+{% endblock %}

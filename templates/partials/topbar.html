@@ -1,0 +1,30 @@
+<header class="topbar">
+  <div class="topbar__left">
+    <button type="button" class="menu-toggle" data-sidebar-toggle aria-label="Abrir menu">
+      ☰
+    </button>
+    <h1 class="topbar__title">{% block page_title %}FlowTask{% endblock %}</h1>
+  </div>
+  <div class="topbar__actions">
+    <form class="search-box" action="{% url 'workspace:search' %}" method="get" role="search">
+      <label class="sr-only" for="topbar-search">Buscar</label>
+      <input
+        class="input"
+        id="topbar-search"
+        type="search"
+        name="q"
+        value="{{ request.GET.q|default:'' }}"
+        placeholder="Buscar projetos e tarefas…"
+        autocomplete="off"
+      >
+    </form>
+    {% block topbar_actions %}{% endblock %}
+    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Alternar tema">
+      <span class="theme-toggle__icon" data-theme-icon-light aria-hidden="true">☾</span>
+      <span class="theme-toggle__icon" data-theme-icon-dark aria-hidden="true">☀</span>
+    </button>
+    <span class="avatar avatar--lg" title="{{ request.user.username }}" aria-hidden="true">
+      {{ request.user.first_name|default:request.user.username|make_list|first|upper }}
+    </span>
+  </div>
+</header>

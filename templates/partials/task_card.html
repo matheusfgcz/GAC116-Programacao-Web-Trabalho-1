@@ -1,0 +1,23 @@
+<article
+  class="task-card"
+  draggable="true"
+  data-task-id="{{ task.id }}"
+  aria-grabbed="false"
+>
+  <a href="{% url 'workspace:task_detail' task.pk %}?next={{ request.get_full_path|urlencode }}">
+    <h3 class="task-card__title">{{ task.title }}</h3>
+  </a>
+  <div class="task-card__meta">
+    <span class="priority priority--{{ task.priority }}">{{ task.get_priority_display }}</span>
+    {% if task.assignee %}
+      <span class="avatar" title="{{ task.assignee.get_full_name|default:task.assignee.username }}">
+        {{ task.assignee.first_name|default:task.assignee.username|make_list|first|upper }}
+      </span>
+    {% endif %}
+  </div>
+  {% if task.due_date %}
+    <p class="due {% if task.is_overdue %}due--overdue{% endif %}" style="margin: 0.5rem 0 0;">
+      {{ task.due_date|date:"d/m" }}
+    </p>
+  {% endif %}
+</article>

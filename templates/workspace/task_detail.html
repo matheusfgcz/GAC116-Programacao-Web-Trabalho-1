@@ -1,0 +1,133 @@
+{% extends "app.html" %}
+
+{% block body_class %}app drawer-open{% endblock %}
+
+{% block title %}{{ task.title }} · FlowTask{% endblock %}
+{% block page_title %}{{ project.name }}{% endblock %}
+
+{% block content %}
+<div
+  class="drawer-root"
+  data-task-drawer
+  data-close-url="{{ back_url }}"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="task-drawer-title"
+>
+  <button type="button" class="drawer-backdrop" data-drawer-close aria-label="Fechar tarefa"></button>
+
+  <aside class="drawer-panel">
+    <header class="drawer-panel__head">
+      <div>
+        <h1 id="task-drawer-title">{{ task.title }}</h1>
+        <p class="drawer-panel__meta">
+          {{ project.name }} · {{ task.column.name }}
+          {% if task.due_date %}
+            · <span class="{% if task.is_overdue %}due due--overdue{% endif %}">Prazo {{ task.due_date|date:"d/m/Y" }}</span>
+          {% endif %}
+        </p>
+      </div>
+      <a
+        class="icon-btn"
+        href="{{ back_url }}"
+        data-drawer-close
+        aria-label="Fechar e voltar"
+        title="Fechar (Esc)"
+      >✕</a>
+    </header>
+
+    {% if messages %}
+      <div class="messages" role="status">
+        {% for message in messages %}
+          <div class="message{% if message.tags %} message--{{ message.tags }}{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <section class="drawer-section">
+      <h2>Detalhes</h2>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next_url }}">
+        {% for field in form %}
+          <div class="field">
+            <label class="field__label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}
+              <p class="field__error">{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endfor %}
+        <div class="drawer-actions">
+          <button type="submit" class="btn">Salvar</button>
+          <button type="submit" class="btn btn--secondary" name="close" value="1">Salvar e fechar</button>
+          <a class="btn btn--ghost" href="{{ back_url }}" data-drawer-close>Voltar</a>
+          <a class="btn btn--danger btn--sm" href="{% url 'workspace:task_delete' task.pk %}?next={{ next_url|urlencode }}">Excluir</a>
+        </div>
+      </form>
+    </section>
+
+    <section class="drawer-section">
+      <h2>Checklist</h2>
+      <ul class="checklist">
+        {% for item in checklist %}
+          <li class="checklist__item {% if item.done %}is-done{% endif %}">
+            <form method="post" action="{% url 'workspace:checklist_toggle' task.pk item.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ next_url }}">
+              <button type="submit" class="btn btn--sm btn--ghost" aria-pressed="{{ item.done|yesno:'true,false' }}" aria-label="Alternar item">
+                {% if item.done %}✓{% else %}○{% endif %}
+              </button>
+            </form>
+            <span style="flex: 1;">{{ item.text }}</span>
+            <form method="post" action="{% url 'workspace:checklist_delete' task.pk item.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ next_url }}">
+              <button type="submit" class="btn btn--sm btn--ghost" aria-label="Remover item">✕</button>
+            </form>
+          </li>
+        {% empty %}
+          <li class="due">Nenhum item ainda.</li>
+        {% endfor %}
+      </ul>
+      <form method="post" action="{% url 'workspace:checklist_add' task.pk %}" class="inline-form">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next_url }}">
+        {{ checklist_form.text }}
+        <button type="submit" class="btn btn--sm btn--secondary">Add</button>
+      </form>
+    </section>
+
+    <section class="drawer-section">
+      <h2>Comentários</h2>
+      <div class="stack-sm">
+        {% for comment in comments %}
+          <article class="comment">
+            <div class="comment__meta">
+              <span class="avatar">
+                {{ comment.author.first_name|default:comment.author.username|make_list|first|upper }}
+              </span>
+              <strong>{{ comment.author.get_full_name|default:comment.author.username }}</strong>
+              <span>· {{ comment.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+            <p style="margin: 0;">{{ comment.body }}</p>
+          </article>
+        {% empty %}
+          <p class="due">Seja o primeiro a comentar.</p>
+        {% endfor %}
+      </div>
+      <form method="post" action="{% url 'workspace:comment_add' task.pk %}" style="margin-top: 0.5rem;">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next_url }}">
+        <div class="field">
+          <label class="field__label" for="{{ comment_form.body.id_for_label }}">{{ comment_form.body.label }}</label>
+          {{ comment_form.body }}
+        </div>
+        <button type="submit" class="btn btn--secondary">Publicar</button>
+      </form>
+    </section>
+  </aside>
+</div>
+{% endblock %}

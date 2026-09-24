@@ -1,0 +1,144 @@
+:root {
+  /* Surfaces */
+  --color-bg: #e8edf5;
+  --color-bg-accent: #f0f3f8;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f7f9fc;
+  --color-sidebar: #1b2433;
+  --color-sidebar-hover: #243044;
+  --color-sidebar-text: #c5cede;
+  --color-sidebar-text-strong: #ffffff;
+
+  /* Brand */
+  --color-brand: #0f766e;
+  --color-brand-strong: #115e59;
+  --color-brand-soft: rgba(15, 118, 110, 0.12);
+  --color-brand-glow: rgba(15, 118, 110, 0.28);
+
+  /* Text */
+  --color-text: #1a2332;
+  --color-text-muted: #475569;
+  --color-text-subtle: #64748b;
+  --color-border: #d8e0ec;
+  --color-border-strong: #b8c4d6;
+
+  /* Semantic */
+  --color-danger: #be123c;
+  --color-danger-soft: #ffe4e8;
+  --color-warning: #b45309;
+  --color-success: #047857;
+  --color-info: #0369a1;
+
+  /* Priority */
+  --priority-low: #64748b;
+  --priority-medium: #0369a1;
+  --priority-high: #b45309;
+  --priority-urgent: #be123c;
+
+  /* Typography */
+  --font-display: "Sora", "Segoe UI", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(27, 36, 51, 0.06);
+  --shadow-md: 0 8px 24px rgba(27, 36, 51, 0.08);
+  --shadow-lg: 0 18px 40px rgba(27, 36, 51, 0.12);
+  --shadow-card-hover: 0 12px 28px rgba(15, 118, 110, 0.16);
+
+  /* Layout */
+  --sidebar-width: 16.5rem;
+  --topbar-height: 3.75rem;
+  --content-max: 92rem;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 140ms;
+  --duration-normal: 240ms;
+  --duration-slow: 380ms;
+
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --color-bg: #121826;
+  --color-bg-accent: #171f2e;
+  --color-surface: #1e293b;
+  --color-surface-muted: #273549;
+  --color-sidebar: #0b1220;
+  --color-sidebar-hover: #1e293b;
+  --color-sidebar-text: #cbd5e1;
+  --color-sidebar-text-strong: #ffffff;
+
+  --color-brand: #14b8a6;
+  --color-brand-strong: #99f6e4;
+  --color-brand-soft: rgba(20, 184, 166, 0.22);
+  --color-brand-glow: rgba(20, 184, 166, 0.35);
+
+  --color-text: #f8fafc;
+  --color-text-muted: #cbd5e1;
+  --color-text-subtle: #94a3b8;
+  --color-border: #334155;
+  --color-border-strong: #475569;
+
+  --color-danger: #fb7185;
+  --color-danger-soft: rgba(251, 113, 133, 0.22);
+  --color-warning: #fbbf24;
+  --color-success: #4ade80;
+  --color-info: #7dd3fc;
+
+  --priority-low: #cbd5e1;
+  --priority-medium: #7dd3fc;
+  --priority-high: #fcd34d;
+  --priority-urgent: #fb7185;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.5);
+  --shadow-card-hover: 0 12px 28px rgba(20, 184, 166, 0.18);
+
+  --bs-body-color: #f8fafc;
+  --bs-body-bg: #121826;
+  --bs-emphasis-color: #ffffff;
+  --bs-secondary-color: #cbd5e1;
+  --bs-tertiary-color: #94a3b8;
+  --bs-border-color: #334155;
+  --bs-heading-color: #f8fafc;
+  --bs-link-color: #5eead4;
+  --bs-link-hover-color: #99f6e4;
+  --bs-card-bg: #1e293b;
+  --bs-card-color: #f8fafc;
+  --bs-form-control-bg: #1e293b;
+  --bs-body-color-rgb: 248, 250, 252;
+
+  color-scheme: dark;
+}

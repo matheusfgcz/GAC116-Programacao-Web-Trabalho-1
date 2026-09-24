@@ -1,0 +1,60 @@
+<aside class="sidebar" data-sidebar aria-label="Navegação principal">
+  <a class="sidebar__brand" href="{% url 'workspace:dashboard' %}">
+    <span class="sidebar__mark" aria-hidden="true">F</span>
+    <span class="sidebar__name">FlowTask</span>
+  </a>
+
+  <nav class="sidebar__nav sidebar__section" aria-label="Menu">
+    <span class="sidebar__label">Espaço</span>
+    <a href="{% url 'workspace:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}is-active{% endif %}">
+      Dashboard
+    </a>
+    <a href="{% url 'workspace:project_list' %}" class="{% if 'project' in request.resolver_match.url_name %}is-active{% endif %}">
+      Projetos
+    </a>
+    <a href="{% url 'workspace:search' %}" class="{% if request.resolver_match.url_name == 'search' %}is-active{% endif %}">
+      Busca
+    </a>
+    {% if request.user.is_staff %}
+      <a href="/admin/" target="_blank" rel="noopener">
+        Administração
+      </a>
+    {% endif %}
+  </nav>
+
+  <div class="sidebar__section">
+    <span class="sidebar__label">Recentes</span>
+    <nav class="sidebar__nav" aria-label="Projetos recentes">
+      {% for project in nav_projects %}
+        <a href="{% url 'workspace:project_board' project.pk %}">
+          <span class="sidebar__dot" style="background: {{ project.color }}" aria-hidden="true"></span>
+          <span>{{ project.name }}</span>
+        </a>
+      {% empty %}
+        <p style="padding: 0.5rem 0.75rem; color: var(--color-text-subtle); font-size: var(--text-sm); margin: 0;">
+          Nenhum projeto ainda.
+        </p>
+      {% endfor %}
+    </nav>
+  </div>
+
+  <div class="sidebar__footer">
+    <div class="user-chip" style="color: var(--color-sidebar-text-strong); margin-bottom: 0.35rem;">
+      <span class="avatar" aria-hidden="true">
+        {{ request.user.first_name|default:request.user.username|make_list|first|upper }}
+      </span>
+      <span>{{ request.user.get_full_name|default:request.user.username }}</span>
+    </div>
+    {% if user_profile %}
+      <p style="margin: 0 0 0.75rem; padding-left: 0.25rem; font-size: var(--text-xs); color: var(--color-brand);">
+        {{ user_profile.get_role_display }}
+      </p>
+    {% endif %}
+    <form action="{% url 'accounts:logout' %}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn--ghost btn--block" style="color: var(--color-sidebar-text); justify-content: flex-start;">
+        Sair
+      </button>
+    </form>
+  </div>
+</aside>

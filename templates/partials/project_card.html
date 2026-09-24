@@ -1,0 +1,10 @@
+<a class="project-card" href="{% url 'workspace:project_board' project.pk %}">
+  <span class="project-card__accent" style="background: {{ project.color }}" aria-hidden="true"></span>
+  <h3 class="project-card__title">{{ project.name }}</h3>
+  <p class="project-card__meta">
+    {{ project.task_count|default:project.tasks.count }} tarefa{{ project.task_count|default:project.tasks.count|pluralize }}
+  </p>
+  {% if project.description %}
+    <p class="project-card__meta">{{ project.description|truncatechars:90 }}</p>
+  {% endif %}
+</a>

@@ -1,0 +1,120 @@
+{% extends "app.html" %}
+{% load static %}
+
+{% block title %}{{ project.name }} · Board{% endblock %}
+{% block page_title %}Board{% endblock %}
+
+{% block topbar_actions %}
+  <div class="view-switch" role="tablist" aria-label="Modo de visualização">
+    <a class="is-active" href="{% url 'workspace:project_board' project.pk %}">Board</a>
+    <a href="{% url 'workspace:project_list_view' project.pk %}">Lista</a>
+  </div>
+  {% if can_create_project %}
+    <a class="btn btn--secondary" href="{% url 'workspace:project_create' %}">Novo projeto</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+
+<header class="board-header">
+  <div class="board-header__identity">
+    <span class="board-header__accent" style="background: {{ project.color }}" aria-hidden="true"></span>
+    <div>
+      <p class="board-header__eyebrow">Projeto</p>
+      <h2 class="board-header__title">{{ project.name }}</h2>
+      {% if project.description %}
+        <p class="board-header__desc">{{ project.description|truncatechars:120 }}</p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="board-header__actions">
+    <a class="btn btn--secondary" href="{% url 'workspace:task_create' project.pk %}">Nova tarefa</a>
+    {% if can_manage %}
+      <a class="btn" href="{% url 'workspace:project_settings' project.pk %}">Editar projeto</a>
+    {% endif %}
+  </div>
+</header>
+
+<div
+  class="board"
+  data-kanban
+  data-reorder-url="{% url 'workspace:task_reorder' %}"
+  aria-label="Quadro Kanban de {{ project.name }}"
+>
+  {% for column in columns %}
+    <section class="board-column" data-column-id="{{ column.id }}">
+      <header class="board-column__head">
+        <h3 class="board-column__title">
+          <span class="sidebar__dot" style="background: {{ column.color }}" aria-hidden="true"></span>
+          {{ column.name }}
+        </h3>
+        <div class="board-column__tools">
+          <span class="board-column__count" data-column-count>{{ column.tasks.count }}</span>
+          {% if can_manage %}
+            <details class="column-menu">
+              <summary class="btn btn--sm btn--ghost" aria-label="Opções da coluna {{ column.name }}">⋯</summary>
+              <div class="column-menu__panel">
+                <form method="post" action="{% url 'workspace:column_update' project.pk column.id %}" class="stack-sm">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.path }}">
+                  <label class="field__label" for="col-name-{{ column.id }}">Nome</label>
+                  <input class="input" id="col-name-{{ column.id }}" name="name" value="{{ column.name }}" required>
+                  <label class="field__label" for="col-color-{{ column.id }}">Cor</label>
+                  <input class="input input--color" id="col-color-{{ column.id }}" type="color" name="color" value="{{ column.color }}">
+                  <button type="submit" class="btn btn--sm">Salvar</button>
+                </form>
+                <form method="post" action="{% url 'workspace:column_delete' project.pk column.id %}" onsubmit="return confirm('Excluir a coluna {{ column.name }}? Ela precisa estar vazia.');">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.path }}">
+                  <button type="submit" class="btn btn--sm btn--danger btn--block">Excluir coluna</button>
+                </form>
+              </div>
+            </details>
+          {% endif %}
+        </div>
+      </header>
+      <div class="board-column__body" data-column-body>
+        {% for task in column.tasks.all %}
+          {% include "partials/task_card.html" with task=task %}
+        {% endfor %}
+      </div>
+      <footer class="board-column__footer">
+        <form method="post" action="{% url 'workspace:quick_create_task' project.pk column.id %}" class="quick-task-form">
+          {% csrf_token %}
+          {{ quick_form.title }}
+          {% if can_assign and quick_form.assignee %}
+            {{ quick_form.assignee }}
+          {% endif %}
+          <button type="submit" class="btn btn--sm btn--secondary" aria-label="Adicionar tarefa em {{ column.name }}">+</button>
+        </form>
+      </footer>
+    </section>
+  {% endfor %}
+
+  {% if can_manage %}
+    <section class="board-column board-column--add">
+      <header class="board-column__head">
+        <h3 class="board-column__title">Nova coluna</h3>
+      </header>
+      <div class="board-column__body">
+        <form method="post" action="{% url 'workspace:column_create' project.pk %}" class="stack-sm">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          {% for field in column_form %}
+            <div class="field">
+              <label class="field__label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+            </div>
+          {% endfor %}
+          <button type="submit" class="btn btn--secondary">Adicionar coluna</button>
+        </form>
+      </div>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/kanban.js' %}" defer></script>
+{% endblock %}
