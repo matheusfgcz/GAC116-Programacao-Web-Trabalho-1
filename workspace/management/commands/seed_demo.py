@@ -23,7 +23,7 @@ class Command(BaseCommand):
         )
         manager = self._ensure_user(
             username="gerente",
-            password="gerente234",
+            password="gerente1234",
             first_name="Ana",
             email="gerente@flowtask.local",
             role=UserProfile.Role.MANAGER,
