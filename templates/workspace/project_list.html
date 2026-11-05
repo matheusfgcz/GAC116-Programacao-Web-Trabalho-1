@@ -1,0 +1,40 @@
+{% extends "app.html" %}
+
+{% block title %}Projetos · FlowTask{% endblock %}
+{% block page_title %}Projetos{% endblock %}
+
+{% block topbar_actions %}
+  {% if can_create_project %}
+    <a class="btn" href="{% url 'workspace:project_create' %}">Novo projeto</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="section-head">
+  <div>
+    <h2>Todos os projetos</h2>
+    <p>Gerencie workspaces e abra o quadro de cada um.</p>
+  </div>
+  {% if can_create_project %}
+    <a class="btn" href="{% url 'workspace:project_create' %}">Novo projeto</a>
+  {% endif %}
+</div>
+
+{% if projects %}
+  <div class="project-grid">
+    {% for project in projects %}
+      {% include "partials/project_card.html" with project=project %}
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <h3>Sem projetos</h3>
+    <p>Crie um projeto para começar o fluxo de tarefas.</p>
+    {% if can_create_project %}
+      <a class="btn" href="{% url 'workspace:project_create' %}">Criar projeto</a>
+    {% else %}
+      <p class="due">Peça a um Gerente ou Administrador para criar um projeto e te adicionar.</p>
+    {% endif %}
+  </div>
+{% endif %}
+{% endblock %}

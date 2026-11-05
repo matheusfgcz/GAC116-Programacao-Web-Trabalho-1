@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block page_title %}Página não encontrada{% endblock %}
+{% block content %}
+<div class="container text-center mt-5">
+    <h1 class="display-1 text-danger">404</h1>
+    <h2>Página não encontrada</h2>
+    <p>A página que você procura não existe ou foi movida.</p>
+    <a href="{% url 'workspace:project_list' %}" class="btn btn-primary mt-3">Voltar ao Início</a>
+</div>
+{% endblock %}

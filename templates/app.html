@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block body_class %}app{% endblock %}
+
+{% block body %}
+<div class="sidebar-backdrop" data-sidebar-backdrop></div>
+<div class="app-shell">
+  {% include "partials/sidebar.html" %}
+  <div class="main">
+    {% include "partials/topbar.html" %}
+    <main id="conteudo" class="content">
+      {% if messages %}
+        <div class="messages" role="status">
+          {% for message in messages %}
+            <div class="message{% if message.tags %} message--{{ message.tags }}{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "app.html" %}
+
+{% block title %}Configurações · {{ project.name }}{% endblock %}
+{% block page_title %}Configurações · {{ project.name }}{% endblock %}
+
+{% block topbar_actions %}
+  <a class="btn btn--secondary" href="{% url 'workspace:project_board' project.pk %}">Voltar ao board</a>
+{% endblock %}
+
+{% block content %}
+<div class="split">
+  <section class="panel">
+    <h2>Projeto</h2>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="field">
+          <label class="field__label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% for error in field.errors %}
+            <p class="field__error">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn">Salvar alterações</button>
+    </form>
+  </section>
+
+  <div class="stack-sm">
+    <section class="panel">
+      <h2>Colunas</h2>
+      <ul class="checklist">
+        {% for column in columns %}
+          <li class="checklist__item" style="flex-wrap: wrap; align-items: flex-start;">
+            <form method="post" action="{% url 'workspace:column_update' project.pk column.id %}" class="inline-form" style="flex: 1; flex-wrap: wrap;">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.path }}">
+              <input class="input" name="name" value="{{ column.name }}" aria-label="Nome da coluna" required>
+              <input class="input input--color" type="color" name="color" value="{{ column.color }}" aria-label="Cor da coluna">
+              <button type="submit" class="btn btn--sm btn--secondary">Salvar</button>
+            </form>
+            <form method="post" action="{% url 'workspace:column_delete' project.pk column.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.path }}">
+              <button type="submit" class="btn btn--sm btn--ghost" aria-label="Excluir coluna {{ column.name }}">✕</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+      <form method="post" action="{% url 'workspace:column_create' project.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        {% for field in column_form %}
+          <div class="field">
+            <label class="field__label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn--secondary btn--sm">Adicionar coluna</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Zona de perigo</h2>
+      <p style="color: var(--color-text-muted);">Excluir o projeto remove tarefas, checklist e comentários.</p>
+      <a class="btn btn--danger" href="{% url 'workspace:project_delete' project.pk %}">Excluir projeto</a>
+    </section>
+  </div>
+</div>
+{% endblock %}

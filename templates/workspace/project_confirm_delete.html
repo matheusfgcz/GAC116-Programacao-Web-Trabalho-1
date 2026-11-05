@@ -1,0 +1,18 @@
+{% extends "app.html" %}
+
+{% block title %}Excluir projeto · FlowTask{% endblock %}
+{% block page_title %}Excluir projeto{% endblock %}
+
+{% block content %}
+<div class="panel" style="max-width: 32rem;">
+  <h2>Excluir “{{ object.name }}”?</h2>
+  <p style="color: var(--color-text-muted);">Essa ação não pode ser desfeita.</p>
+  <form method="post">
+    {% csrf_token %}
+    <div style="display: flex; gap: 0.75rem;">
+      <button type="submit" class="btn btn--danger">Confirmar exclusão</button>
+      <a class="btn btn--secondary" href="{% url 'workspace:project_settings' object.pk %}">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

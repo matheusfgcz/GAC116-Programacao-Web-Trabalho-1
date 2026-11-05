@@ -1,0 +1,87 @@
+{% extends "app.html" %}
+
+{% block title %}{{ project.name }} · Lista{% endblock %}
+{% block page_title %}Lista{% endblock %}
+
+{% block topbar_actions %}
+  <div class="view-switch" role="tablist" aria-label="Modo de visualização">
+    <a href="{% url 'workspace:project_board' project.pk %}">Board</a>
+    <a class="is-active" href="{% url 'workspace:project_list_view' project.pk %}">Lista</a>
+  </div>
+{% endblock %}
+
+{% block content %}
+<header class="board-header">
+  <div class="board-header__identity">
+    <span class="board-header__accent" style="background: {{ project.color }}" aria-hidden="true"></span>
+    <div>
+      <p class="board-header__eyebrow">Projeto</p>
+      <h2 class="board-header__title">{{ project.name }}</h2>
+    </div>
+  </div>
+  <div class="board-header__actions">
+    <a class="btn btn--secondary" href="{% url 'workspace:task_create' project.pk %}">Nova tarefa</a>
+    {% if can_manage %}
+      <a class="btn" href="{% url 'workspace:project_settings' project.pk %}">Editar projeto</a>
+    {% endif %}
+  </div>
+</header>
+
+<form method="get" class="filters" aria-label="Filtros">
+  <label class="sr-only" for="filter-priority">Prioridade</label>
+  <select class="input" id="filter-priority" name="priority" onchange="this.form.submit()">
+    <option value="">Todas as prioridades</option>
+    {% for value, label in priorities %}
+      <option value="{{ value }}" {% if selected_priority == value %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <label class="sr-only" for="filter-status">Status</label>
+  <select class="input" id="filter-status" name="status" onchange="this.form.submit()">
+    <option value="">Todos os status</option>
+    {% for column in columns %}
+      <option value="{{ column.id }}" {% if selected_status == column.id|stringformat:"s" %}selected{% endif %}>{{ column.name }}</option>
+    {% endfor %}
+  </select>
+</form>
+
+{% if tasks %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Tarefa</th>
+          <th>Status</th>
+          <th>Prioridade</th>
+          <th>Responsável</th>
+          <th>Prazo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+          <tr>
+            <td><a href="{% url 'workspace:task_detail' task.pk %}?next={{ request.get_full_path|urlencode }}">{{ task.title }}</a></td>
+            <td>{{ task.column.name }}</td>
+            <td><span class="priority priority--{{ task.priority }}">{{ task.get_priority_display }}</span></td>
+            <td>
+              {% if task.assignee %}
+                {{ task.assignee.get_full_name|default:task.assignee.username }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td class="due {% if task.is_overdue %}due--overdue{% endif %}">
+              {% if task.due_date %}{{ task.due_date|date:"d/m/Y" }}{% else %}—{% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="empty-state">
+    <h3>Nenhuma tarefa encontrada</h3>
+    <p>Ajuste os filtros ou crie uma nova tarefa.</p>
+    <a class="btn" href="{% url 'workspace:task_create' project.pk %}">Nova tarefa</a>
+  </div>
+{% endif %}
+{% endblock %}
